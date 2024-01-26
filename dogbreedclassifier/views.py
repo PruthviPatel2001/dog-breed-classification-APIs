@@ -12,8 +12,11 @@ import torch
 import os
 from torch import nn
 from PIL import Image
+from dogdata.dog_breed_data import dog_breeds_data
+
 
 dog_breeds =['african_hunting_dog', 'american_staffordshire_terrier', 'australian_terrier', 'basset', 'beagle', 'bernese_mountain_dog', 'border_terrier', 'boston_bull', 'boxer', 'chow', 'doberman', 'english_foxhound', 'flat-coated_retriever', 'french_bulldog', 'german_shepherd', 'german_short-haired_pointer', 'golden_retriever', 'great_dane', 'great_pyrenees', 'japanese_spaniel', 'labrador_retriever', 'leonberg', 'mexican_hairless', 'newfoundland', 'norfolk_terrier', 'pomeranian', 'pug', 'rottweiler', 'shih-tzu', 'siberian_husky']
+
 # Load your model
 model = models.resnet50(pretrained=True)
 num_classes = len(dog_breeds)
@@ -59,10 +62,18 @@ def predict_dog_breed(request):
     # Get the predicted class index
     _, predicted_idx = torch.max(output, 1)
     predicted_label = classes[predicted_idx.item()]
+    
+    # Get the breed details
+    breed_details = get_breed_details(predicted_label)
+    # if not breed_details:
 
-    # Return the result as JSON
-    response_data = {'predicted_breed': predicted_label}
+    #     return HttpResponse("Breed details not found", status=500)
+    
+    # Add the breed details to the response
+    response_data = {'predicted_breed': predicted_label, 'breed_details': breed_details}
     return JsonResponse(response_data)
 
+def get_breed_details(breed_name):
+    breed_details = next((breed for breed in dog_breeds_data if breed['breed_name'] == breed_name), None)
+    return breed_details
 
-# Create your views here.

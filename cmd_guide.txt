@@ -1,0 +1,5 @@
+to create project = django-admin startproject dog_breed_api
+
+to create app = python3 manage.py startapp dog_breed
+
+to run API server= python3 manage.py runserver 
