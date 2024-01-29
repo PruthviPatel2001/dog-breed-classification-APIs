@@ -26,7 +26,13 @@ model.fc = nn.Linear(model.fc.in_features, num_classes)
 classes = dog_breeds
 
 # Load the model from the checkpoint
-model_path = '/Users/pruthvipatel/Documents/projects/dog_breed_api/dog_breed_model.pth' 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Go one level up from the current directory
+project_dir = os.path.dirname(base_dir)
+
+# Construct the dynamic model path
+model_path = os.path.join(project_dir, 'dog_breed_model.pth')
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
