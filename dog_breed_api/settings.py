@@ -25,7 +25,10 @@ SECRET_KEY = "django-insecure-w0u@(-x9)^0!^7wy1h*i2c9hws68ki@6@h%0xyygr+3)26h&t+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# settings.py
+
+ALLOWED_HOSTS = ['dog-breeds-api.onrender.com', 'localhost', '127.0.0.1']
+
 
 
 # Application definition
