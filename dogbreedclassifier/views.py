@@ -1,17 +1,16 @@
-from django.shortcuts import render
+
 # classifier/views.py
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST,require_GET
 from PIL import Image
-from io import BytesIO
+
 from torchvision import transforms, models
-from django.conf import settings
+
 # Import your placeholder model
 import torch
 import os
 from torch import nn
-from PIL import Image
 from dogdata.dog_breed_data import dog_breeds_data
 
 

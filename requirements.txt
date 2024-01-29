@@ -1,0 +1,6 @@
+Django==5.0.1
+djangorestframework==3.14.2
+Pillow==9.4.0
+torch==2.0.0
+torchvision==0.15.1
+pathlib==1.0.1
