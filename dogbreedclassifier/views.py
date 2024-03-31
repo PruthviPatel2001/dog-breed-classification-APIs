@@ -17,9 +17,9 @@ from dogdata.dog_breed_data import dog_breeds_data
 dog_breeds =['african_hunting_dog', 'american_staffordshire_terrier', 'australian_terrier', 'basset', 'beagle', 'bernese_mountain_dog', 'border_terrier', 'boston_bull', 'boxer', 'chow', 'doberman', 'english_foxhound', 'flat-coated_retriever', 'french_bulldog', 'german_shepherd', 'german_short-haired_pointer', 'golden_retriever', 'great_dane', 'great_pyrenees', 'japanese_spaniel', 'labrador_retriever', 'leonberg', 'mexican_hairless', 'newfoundland', 'norfolk_terrier', 'pomeranian', 'pug', 'rottweiler', 'shih-tzu', 'siberian_husky']
 
 # Load your model
-model = models.resnet50(pretrained=True)
-num_classes = len(dog_breeds)
-model.fc = nn.Linear(model.fc.in_features, num_classes)
+# model = models.resnet50(pretrained=True)
+# num_classes = len(dog_breeds)
+# model.fc = nn.Linear(model.fc.in_features, num_classes)
 
 # Define the class labels
 classes = dog_breeds
@@ -31,7 +31,14 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(base_dir)
 
 # Construct the dynamic model path
+# model_path = os.path.join(project_dir, 'dog_breed_model.pth')
+# model.load_state_dict(torch.load(model_path))
+# model.eval()
+
 model_path = os.path.join(project_dir, 'dog_breed_model.pth')
+model = models.resnet50(pretrained=False)  # Initialize a new ResNet-50 model without pre-trained weights
+num_classes = len(dog_breeds)
+model.fc = nn.Linear(model.fc.in_features, num_classes)
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
