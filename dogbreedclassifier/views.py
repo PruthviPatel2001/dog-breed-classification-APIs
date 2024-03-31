@@ -67,15 +67,15 @@ def predict_dog_breed(request):
     # Get the predicted class index
     _, predicted_idx = torch.max(output, 1)
     predicted_label = classes[predicted_idx.item()]
+
+    probabilities = torch.softmax(output, dim=1)[0] * 100
     
     # Get the breed details
     breed_details = get_breed_details(predicted_label)
-    # if not breed_details:
-
-    #     return HttpResponse("Breed details not found", status=500)
-    
+  
     # Add the breed details to the response
-    response_data = {'predicted_breed': predicted_label, 'breed_details': breed_details}
+    response_data = {'predicted_breed': predicted_label, 'breed_details': breed_details, 'confidence_score': round(float(probabilities[predicted_idx.item()]),2)}
+
     return JsonResponse(response_data)
 
 def get_breed_details(breed_name):
