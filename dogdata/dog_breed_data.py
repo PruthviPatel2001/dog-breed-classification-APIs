@@ -1,3 +1,5 @@
+dog_breeds =['african_hunting_dog', 'american_staffordshire_terrier', 'australian_terrier', 'basset', 'beagle', 'bernese_mountain_dog', 'border_terrier', 'boston_bull', 'boxer', 'chow', 'doberman', 'english_foxhound', 'flat-coated_retriever', 'french_bulldog', 'german_shepherd', 'german_short-haired_pointer', 'golden_retriever', 'great_dane', 'great_pyrenees', 'japanese_spaniel', 'labrador_retriever', 'leonberg', 'mexican_hairless', 'newfoundland', 'norfolk_terrier', 'pomeranian', 'pug', 'rottweiler', 'shih-tzu', 'siberian_husky']
+
 dog_breeds_data = [
     {
     "breed_name": "african_hunting_dog",

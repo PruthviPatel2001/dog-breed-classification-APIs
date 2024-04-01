@@ -3,26 +3,10 @@
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST,require_GET
-from PIL import Image
-
-from torchvision import transforms, models
-
-# Import your placeholder model
-import torch
 import os
-from torch import nn
-from dogdata.dog_breed_data import dog_breeds_data
+from dogdata.dog_breed_data import dog_breeds
+from classifier_utlis.utlis import load_model, preprocess_image, find_dog_breed, dog_breeds,get_breed_details
 
-
-dog_breeds =['african_hunting_dog', 'american_staffordshire_terrier', 'australian_terrier', 'basset', 'beagle', 'bernese_mountain_dog', 'border_terrier', 'boston_bull', 'boxer', 'chow', 'doberman', 'english_foxhound', 'flat-coated_retriever', 'french_bulldog', 'german_shepherd', 'german_short-haired_pointer', 'golden_retriever', 'great_dane', 'great_pyrenees', 'japanese_spaniel', 'labrador_retriever', 'leonberg', 'mexican_hairless', 'newfoundland', 'norfolk_terrier', 'pomeranian', 'pug', 'rottweiler', 'shih-tzu', 'siberian_husky']
-
-# Load your model
-# model = models.resnet50(pretrained=True)
-# num_classes = len(dog_breeds)
-# model.fc = nn.Linear(model.fc.in_features, num_classes)
-
-# Define the class labels
-classes = dog_breeds
 
 # Load the model from the checkpoint
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -30,24 +14,10 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 # Go one level up from the current directory
 project_dir = os.path.dirname(base_dir)
 
-# Construct the dynamic model path
-# model_path = os.path.join(project_dir, 'dog_breed_model.pth')
-# model.load_state_dict(torch.load(model_path))
-# model.eval()
-
-model_path = os.path.join(project_dir, 'dog_breed_model.pth')
-model = models.resnet50(pretrained=False)  # Initialize a new ResNet-50 model without pre-trained weights
+# Load the model from the checkpoint
+model_path =  os.path.join(project_dir, 'dog_breed_model.pth')
 num_classes = len(dog_breeds)
-model.fc = nn.Linear(model.fc.in_features, num_classes)
-model.load_state_dict(torch.load(model_path))
-model.eval()
-
-# Define the transformation for inference
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
+model = load_model(model_path, num_classes, dog_breeds)
 
 @require_GET
 def welcome(request):
@@ -57,35 +27,28 @@ def welcome(request):
 @csrf_exempt
 @require_POST
 def predict_dog_breed(request):
+    
     # Retrieve image from the request
     image = request.FILES.get('image')
     if not image:
         return HttpResponse("No image found in the request")
-    # Preprocess the image
-    input_image = Image.open(image).convert('RGB')
-    input_tensor = transform(input_image)
-    input_batch = input_tensor.unsqueeze(0)
-
-    # Use the model for prediction
-    with torch.no_grad():
-        model.eval()
-        output = model(input_batch)
-
-    # Get the predicted class index
-    _, predicted_idx = torch.max(output, 1)
-    predicted_label = classes[predicted_idx.item()]
-
-    probabilities = torch.softmax(output, dim=1)[0] * 100
     
+    # Preprocess the image
+    input_batch = preprocess_image(image)
+    
+    # Get the predicted breed and confidence score
+    predicted_breed, confidence_score = find_dog_breed(input_batch, model)
+
     # Get the breed details
-    breed_details = get_breed_details(predicted_label)
-  
-    # Add the breed details to the response
-    response_data = {'predicted_breed': predicted_label, 'breed_details': breed_details, 'confidence_score': round(float(probabilities[predicted_idx.item()]),2)}
+    breed_details = get_breed_details(predicted_breed)
+
+    response_data = {
+        'predicted_breed': predicted_breed,
+        'breed_details': breed_details,
+        'confidence_score': round(float(confidence_score), 2)
+    }
 
     return JsonResponse(response_data)
 
-def get_breed_details(breed_name):
-    breed_details = next((breed for breed in dog_breeds_data if breed['breed_name'] == breed_name), None)
-    return breed_details
+
 
