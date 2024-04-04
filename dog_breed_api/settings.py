@@ -57,6 +57,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "https://pupteller.netlify.app",
 ]
 
 ROOT_URLCONF = "dog_breed_api.urls"
